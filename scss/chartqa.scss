@@ -65,8 +65,8 @@ $button-color: #3A4B60;
   }
 
   .chart-message {
-    min-height: 535px;
-    max-height: 535px;
+    min-height: 497px;
+    max-height: 497px;
     overflow: auto;
     margin: 0;
     padding: 0;
@@ -328,7 +328,7 @@ $button-color: #3A4B60;
 
   @media only screen and (max-width:$screen-tb) {
     width: 170px;
-    bottom: 60px;
+    bottom: 0;
 
     &>.chart-qa-ttl {
       font-size: 14px;
@@ -347,8 +347,8 @@ $button-color: #3A4B60;
     }
 
     .chart-message {
-      min-height: 435px;
-      max-height: 435px;
+      min-height: 399px;
+      max-height: 399px;
 
       &>.chart-list {
         &>li {

@@ -2,8 +2,8 @@
   <h1>使い方</h3>
   <div>
     <h2>コード例</h2>
-    <code>
-      // スタイルシート読み込み
+    <div>
+       // スタイルシート読み込み
       <link rel="stylesheet" href="chartqa.css">
       // チャットボットのタグを生成する場所
       <div class="chart-add"><!--  --></div>
@@ -81,7 +81,7 @@
   　　    parentTagOn: true,
  　　   }); 
 　　  </script>
-    </code>
+    </div>
   </div>
   <div>
     <h2>オープション</h2>

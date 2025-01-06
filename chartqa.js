@@ -9,7 +9,7 @@
       'backText01': 'メニューに戻る',
       'backText02': '戻る',
       'parentTagOn': false,
-      'searchBox': false,
+      'searchBox': true,
       'qalist': [],
     }, options);
     var chartMainTag = $(this);
@@ -41,7 +41,6 @@
     var qaList = settings.qalist;
     var sessionStorageId = location.host;
     var sessionStorageItem = [];
-    var backStack = 0;
 
     const ul = $('.chart-list');
     var count = 0;
@@ -157,60 +156,57 @@
 
     function chartSet(check) {
       answering = true;
-      ul.append(`<li class="text-num${count} left-chart"><div class="robot-loading-field"><span class="circle"></span><span class="circle"></span><span class="circle"></span></div></li>`);
+      ul.append(`<li class="text-num${count} left-chart"></li>`);
       chatToBottom(count);
       if (check == 'first' || check == 'next') {
-        var speed = 600;
         if (check == 'first') {
-          speed = 900;
-          setTimeout(function () {
-            $(`.text-num${count}`).html(`<div class="text-chart" style="display:none;">${firstText}</div>`);
-            $(`.text-num${count} .text-chart`).fadeIn(300);
-          }, 10);
+          $(`.text-num${count}`).html(`<div class="text-chart" style="display:none;">${firstText}</div>`);
+          $(`.text-num${count} .text-chart`).fadeIn(300);
+        }
+
+        if (check == 'first') {
+          count++;
+          ul.append(`<li class="text-num${count} left-chart"></li>`);
+          chatToBottom(count);
         }
 
         setTimeout(function () {
-          if (check == 'first') {
-            count++;
-            ul.append(`<li class="text-num${count} left-chart"><div class="robot-loading-field"><span class="circle"></span><span class="circle"></span><span class="circle"></span></div></li>`);
+          $(`.text-num${count}`).html(`<div class="text-chart" style="display:none;">${nextText}</div>`);
+          if (qaList.length > 0) {
+            $(`.text-num${count} .text-chart`).fadeIn(300);
             chatToBottom(count);
+            setTimeout(() => {
+              var tag = $('<ul>', {
+                class: `choice-box`,
+                style: 'display:none;',
+              });
+              for (let i = 0; i < qaList.length; i++) {
+                tag.append(`<li><button type="button" class="choice-btn" data-qanum="${i}">${qaList[i]["title"]}</button></li>`);
+                chatToBottom(count);
+              }
+              $(`.text-num${count} .text-chart`).addClass('-btn');
+              $(`.text-num${count} .text-chart`).append(tag);
+              chatToBottom(count);
+              $(`.text-num${count} .text-chart .choice-box`).fadeIn(300);
+              chatToBottom(count);
+              answering = false;
+            }, 500);
+          } else {
+            var noListText = "現在登録されている質問がありません。"
+            for (let i = 0; i < noListText.length; i++) {
+              $(`.text-num${count} .text-chart`).append(noListText[i]).fadeIn(300);
+              chatToBottom(count);
+            };
           }
-          setTimeout(function () {
-            $(`.text-num${count}`).html(`<div class="text-chart" style="display:none;">${nextText}</div>`);
-            if (qaList.length > 0) {
-              $(`.text-num${count} .text-chart`).fadeIn(300);
-              setTimeout(() => {
-                var tag = $('<ul>', {
-                  class: `choice-box`,
-                  style: 'display:none;',
-                });
-                for (let i = 0; i < qaList.length; i++) {
-                  tag.append(`<li><button type="button" class="choice-btn" data-qanum="${i}">${qaList[i]["title"]}</button></li>`);
-                  chatToBottom(count);
-                }
-                $(`.text-num${count} .text-chart`).addClass('-btn');
-                $(`.text-num${count} .text-chart`).append(tag);
-                chatToBottom(count);
-                $(`.text-num${count} .text-chart .choice-box`).fadeIn(300);
-                chatToBottom(count);
-                answering = false;
-              }, 500);
-            } else {
-              var noListText = "現在登録されている質問がありません。"
-              for (let i = 0; i < noListText.length; i++) {
-                $(`.text-num${count} .text-chart`).append(noListText[i]).fadeIn(300);
-                chatToBottom(count);
-              };
-            }
 
-          }, 300);
-        }, speed);
+        }, 500);
 
       } else if (check == 'back') {
         setTimeout(function () {
           if (level == undefined) {
             $(`.text-num${count}`).html(`<div class="text-chart" style="display:none;">${nextText}</div>`);
             $(`.text-num${count} .text-chart`).fadeIn(300);
+            chatToBottom(count);
             setTimeout(() => {
               var tag = $('<ul>', {
                 class: `choice-box`,
@@ -229,16 +225,15 @@
             }, 500);
           } else {
             for (let i = 0; i < level['title'].length; i++) {
-              setTimeout(() => {
-                if (i == 0) {
-                  $(`.text-num${count}`).html('<div class="text-chart"></div>');
-                  $(`.text-num${count} .text-chart`).append(level['title'][i]);
-                  chatToBottom(count);
-                } else {
-                  $(`.text-num${count} .text-chart`).append(level['title'][i]);
-                  chatToBottom(count);
-                }
-              }, 50 * i);
+              if (i == 0) {
+                $(`.text-num${count}`).html('<div class="text-chart" style="display:none;"></div>');
+                $(`.text-num${count} .text-chart`).append(level['title'][i]);
+                chatToBottom(count);
+                $(`.text-num${count} .text-chart`).fadeIn(300);
+              } else {
+                $(`.text-num${count} .text-chart`).append(level['title'][i]);
+                chatToBottom(count);
+              }
             }
 
             setTimeout(() => {
@@ -256,23 +251,22 @@
               $(`.text-num${count} .text-chart .choice-box`).fadeIn(300);
               chatToBottom(count);
               answering = false;
-            }, (level['title'].length * 50) + 200);
+            }, 500);
           }
-        }, 600);
+        }, 500);
       } else {
         setTimeout(function () {
           if (level["list"] != undefined) {
             for (let i = 0; i < level['title'].length; i++) {
-              setTimeout(() => {
-                if (i == 0) {
-                  $(`.text-num${count}`).html('<div class="text-chart"></div>');
-                  $(`.text-num${count} .text-chart`).append(level['title'][i]);
-                  chatToBottom(count);
-                } else {
-                  $(`.text-num${count} .text-chart`).append(level['title'][i]);
-                  chatToBottom(count);
-                }
-              }, 50 * i);
+              if (i == 0) {
+                $(`.text-num${count}`).html('<div class="text-chart" style="display:none;"></div>');
+                $(`.text-num${count} .text-chart`).append(level['title'][i]);
+                $(`.text-num${count} .text-chart`).fadeIn(300);
+                chatToBottom(count);
+              } else {
+                $(`.text-num${count} .text-chart`).append(level['title'][i]);
+                chatToBottom(count);
+              }
             }
 
             setTimeout(() => {
@@ -290,7 +284,7 @@
               $(`.text-num${count} .text-chart .choice-box`).fadeIn(300);
               chatToBottom(count);
               answering = false;
-            }, (level['title'].length * 50) + 200);
+            }, 500);
 
           } else {
             $(`.text-num${count}`).html(`<div class="text-chart" style="display:none;">${level['text']}</div>`);
@@ -304,7 +298,7 @@
               answering = false;
             }, 500);
           }
-        }, 600);
+        }, 500);
       }
     }
 
@@ -407,19 +401,16 @@
       level = chartSearchBox;
       sessionStorageItem.push(chartSearchBox);
       sessionStorage.setItem(sessionStorageId + 'qalist', JSON.stringify(sessionStorageItem));
-      $(`.text-num${count}`).html(`<div class="text-chart"></div>`);
+      $(`.text-num${count}`).html(`<div class="text-chart" style="display:none;"></div>`);
       if (chartSearchBox['list'].length > 0) {
         for (let i = 0; i < searchVal.length; i++) {
-          setTimeout(() => {
-            if (i == 0) {
-              $(`.text-num${count} .text-chart`).append(searchVal[i]);
-              chatToBottom(count);
-            } else {
-              $(`.text-num${count} .text-chart`).append(searchVal[i]);
-              chatToBottom(count);
-            }
-          }, 50 * i);
-        }
+          if (i == 0) {
+            $(`.text-num${count} .text-chart`).append(searchVal[i]);
+          } else {
+            $(`.text-num${count} .text-chart`).append(searchVal[i]);
+          }
+        } $(`.text-num${count} .text-chart`).fadeIn(300);
+        chatToBottom(count);
 
         setTimeout(() => {
           var tag = $('<ul>', {
@@ -438,26 +429,26 @@
           $(`.text-num${count} .text-chart .choice-box`).fadeIn(300);
           chatToBottom(count);
           answering = false;
-        }, (searchVal.length * 50) + 200);
+        }, 500);
       } else {
         for (let i = 0; i < searchValMiss.length; i++) {
-          setTimeout(() => {
-            if (i == 0) {
-              $(`.text-num${count} .text-chart`).append(searchValMiss[i]);
-              chatToBottom(count);
-            } else {
-              $(`.text-num${count} .text-chart`).append(searchValMiss[i]);
-              chatToBottom(count);
-            }
-          }, 50 * i);
+          if (i == 0) {
+            $(`.text-num${count} .text-chart`).append(searchValMiss[i]);
+            chatToBottom(count);
+          } else {
+            $(`.text-num${count} .text-chart`).append(searchValMiss[i]);
+            chatToBottom(count);
+          }
         }
+        $(`.text-num${count} .text-chart`).fadeIn(300);
+        chatToBottom(count);
         setTimeout(() => {
           count++;
           ul.append(`<li class="text-num${count} left-chart" style="display:none;"><div class="text-chart -btn"><button class="back-btn" data-qanum="next">${settings.backText01}</button></div></li>`);
           $(`.text-num${count}.left-chart`).fadeIn(300);
           chatToBottom(count);
           answering = false;
-        }, (searchVal.length * 50) + 200);
+        }, 500);
       }
     }
 
